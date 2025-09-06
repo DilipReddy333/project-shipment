@@ -24,6 +24,7 @@ const SelectField = ({ label, options, disabled }) => (
 );
 
 const ShipmentDemo = () => {
+  // State to hold the form values
   const [formData, setFormData] = useState({
     groupName: "",
     docLoc: "",
