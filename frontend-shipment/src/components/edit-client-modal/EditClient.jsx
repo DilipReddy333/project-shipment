@@ -26,7 +26,7 @@ const EditClient = ({ clientId, setAllClients }) => {
 
   const clientEditHandler = async (clientId) => {
     try {
-      const resp = await fetch(`${fetchUrl}/${clientId}`, {
+      const resp = await fetch(`${fetchUrl}/clients/${clientId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -53,7 +53,7 @@ const EditClient = ({ clientId, setAllClients }) => {
 
   const clientUpdateHandler = async () => {
     try {
-      const resp = await fetch(`${fetchUrl}/${clientId}`, {
+      const resp = await fetch(`${fetchUrl}/clients/${clientId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

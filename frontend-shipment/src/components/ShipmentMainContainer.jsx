@@ -1,10 +1,9 @@
 import { FaFileAlt } from "react-icons/fa";
 import { Container } from "semantic-ui-react";
-import MAWBDetails from "./MAWBDetails";
-import HAWBDetails from "./HAWBDetails";
 import ShipmentHeader from "./shipment-header/ShipmentHeader";
 import ClientRegistration from "./client-registration/ClientRegistration";
 import ClientList from "./client-list/ClientList";
+import MawbHawb from "./mawb-hawb/MawbHawb";
 
 const ShipmentMainContainer = ({ currentMenu, setCurrentMenu }) => {
   return (
@@ -13,7 +12,7 @@ const ShipmentMainContainer = ({ currentMenu, setCurrentMenu }) => {
         <>
           <ShipmentHeader
             headerStyle={{ width: "100%", height: "100%" }}
-            headerTitle={"Create Full Shipment Job"}
+            headerTitle={"Full Shipment"}
             headerIcon={
               <FaFileAlt
                 style={{
@@ -25,9 +24,9 @@ const ShipmentMainContainer = ({ currentMenu, setCurrentMenu }) => {
               />
             }
           >
+            {/* Need to show the table with MAWB details */}
             <>
-              <MAWBDetails classname={"mawbdetails_flex_style"} />
-              <HAWBDetails classname={"hawbdetails_flex_style"} />
+              <MawbHawb />
             </>
           </ShipmentHeader>
         </>
@@ -39,7 +38,7 @@ const ShipmentMainContainer = ({ currentMenu, setCurrentMenu }) => {
       )}
       {currentMenu === "Client List" && (
         <>
-          <ClientList />
+          <ClientList setCurrentMenu={setCurrentMenu} />
         </>
       )}
     </Container>

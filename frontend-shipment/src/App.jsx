@@ -24,7 +24,7 @@ function App() {
         <Sidebar>
           <Dashboard />
           <SidebarDropdown
-            dropdownTitle={"Create Job"}
+            dropdownTitle={"MANIFEST"}
             titleIcon={<FaFileAlt className="common_icon_style" />}
           >
             <div className="create_job_options_container">
@@ -45,13 +45,13 @@ function App() {
               />
             </div>
           </SidebarDropdown>
-          <PendingJobs />
-          <ReProcessJob />
+          {/* <PendingJobs />
+          <ReProcessJob /> */}
           <History />
-          <IntegrationReport />
+          {/* <IntegrationReport /> */}
           <ExportInvoiceData />
           <SidebarDropdown
-            dropdownTitle={"Configuration"}
+            dropdownTitle={"CONFIGURATION"}
             titleIcon={<FaGears className="common_icon_style" />}
           >
             <div className="create_job_options_container">

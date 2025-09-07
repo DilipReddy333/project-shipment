@@ -138,6 +138,7 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+  gap: 1rem;
 }
 .hawbdetails_flex_style {
   position: relative;
@@ -145,6 +146,7 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+  gap: 1rem;
 }
 /* @media screen and (max-width: 992px) {
   .main_grid_style {
@@ -152,14 +154,7 @@
     grid-template-rows: auto;
   }
 } */
-@media screen and (max-width: 762px) {
-  .mawbdetails_flex_style,
-  .fourth_fifth_container {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-  }
-}
+
 .caret_down_icon {
   position: absolute;
   right: 0;
@@ -240,6 +235,25 @@
   gap: 2px;
   /* flex: 2.3; */
   flex-wrap: wrap;
+  flex: 1;
+}
+.bottom_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  width: 49.5%;
+  gap: 1rem;
+}
+@media screen and (max-width: 762px) {
+  .mawbdetails_flex_style,
+  .fourth_fifth_container,
+  .bottom_container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
 }
 .docloc_container {
   display: flex;
@@ -311,11 +325,34 @@
   font-weight: 500 !important;
   border-radius: 2px !important;
 }
+.error {
+  color: rgba(236, 10, 10, 0.966);
+  text-align: center;
+}
+.loading_spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+.ui.inverted.dimmer .ui.loader:after {
+  border-color: #0077b5 transparent transparent !important;
+}
 .add_btn {
   position: absolute !important;
   background-color: #50b6ba !important;
   right: 0;
   top: -40px;
+}
+.add_client {
+  position: absolute !important;
+  background-color: #50b6ba !important;
+  top: 160px;
+  right: 30px;
+}
+.add_mawb_button {
+  z-index: 10;
+  top: 75px;
 }
 .update_btn {
   background-color: #50aeba !important;
@@ -339,4 +376,5 @@
 /* CLIENT LIST PAGE STYLES */
 .client_list_container {
   margin-inline: 0.5rem;
+  position: relative;
 }

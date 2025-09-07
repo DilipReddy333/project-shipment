@@ -1,7 +1,7 @@
 import { FaUser } from "react-icons/fa6";
 import ShipmentHeader from "../shipment-header/ShipmentHeader";
 import Legend from "../legend/Legend";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { fetchUrl } from "../../urls/URLs";
 import Swal from "sweetalert2";
 import {
@@ -14,31 +14,32 @@ import {
   Button,
 } from "semantic-ui-react";
 import EditClient from "../edit-client-modal/EditClient";
+import CustomButton from "../action-buttons/CustomButton";
+import { useFetch } from "../../../hooks/useFetch";
+import ErrorMessage from "../errorMessage/errorMessage";
+import LoadingSpinner from "../loading-spinner/LoadingSpinner";
 
-const ClientList = () => {
-  const [allClients, setAllClients] = useState([]);
+const ClientList = ({ setCurrentMenu }) => {
+  const {
+    loading,
+    data,
+    setData: setAllClients,
+    error,
+    makeHttpRequest,
+  } = useFetch();
 
   // use effect to get all the clients data from backend
   useEffect(() => {
     const getAllClients = async () => {
       try {
-        const resp = await fetch(`${fetchUrl}/`, {
+        await makeHttpRequest(`${fetchUrl}/clients`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
         });
-        const data = await resp.json();
-        if (data.clients?.length !== 0) {
-          setAllClients(data.clients);
-        }
       } catch (error) {
         console.log(error);
-        // Swal.fire({
-        //   title: error.message,
-        //   icon: "error",
-        //   showConfirmButton: true,
-        // });
       }
     };
     getAllClients();
@@ -58,7 +59,7 @@ const ClientList = () => {
       }).then(async (result) => {
         if (result.isConfirmed) {
           Swal.showLoading();
-          const resp = await fetch(`${fetchUrl}/delete/${clientId}`, {
+          const resp = await fetch(`${fetchUrl}/clients/delete/${clientId}`, {
             method: "DELETE",
             headers: {
               "Content-Type": "application/json",
@@ -68,7 +69,10 @@ const ClientList = () => {
           if (data.message) {
             Swal.hideLoading();
             setAllClients((prev) => {
-              return prev.filter((client) => client._id !== clientId);
+              const updatedClients = prev?.clients?.filter(
+                (client) => client._id !== clientId
+              );
+              return { clients: updatedClients };
             });
             Swal.fire({
               title: data.message,
@@ -83,6 +87,9 @@ const ClientList = () => {
       console.log(error);
     }
   };
+  if (loading) {
+    return <LoadingSpinner loadingMessage={"Loading..."} />;
+  }
 
   // console.count("client list");
   return (
@@ -103,7 +110,18 @@ const ClientList = () => {
       >
         <Legend legendName={"Search Client"}>Search client</Legend>
         <Legend legendName={"Client List"}>
-          {allClients?.length > 0 ? (
+          {!error?.message && (
+            <CustomButton
+              btnClassname={"save_btn add_client"}
+              btnContent={"Add"}
+              btnIcon={"plus"}
+              iconPosition={"left"}
+              onClick={() => {
+                setCurrentMenu("Client Registration");
+              }}
+            />
+          )}
+          {data?.clients?.length > 0 ? (
             <div className="client_list_container">
               <Table celled>
                 <TableHeader>
@@ -117,7 +135,7 @@ const ClientList = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {allClients?.map((client, i) => {
+                  {data?.clients?.map((client, i) => {
                     return (
                       <TableRow key={client._id}>
                         <TableCell>{i + 1}</TableCell>
@@ -144,7 +162,13 @@ const ClientList = () => {
               </Table>
             </div>
           ) : (
-            <h4>No Clients Added</h4>
+            <>
+              {!error?.message ? (
+                <h4>No Clients Added</h4>
+              ) : (
+                <ErrorMessage errorMessage={error?.message} />
+              )}
+            </>
           )}
         </Legend>
       </ShipmentHeader>

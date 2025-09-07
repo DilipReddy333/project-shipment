@@ -1,2 +1,2 @@
 
-export const fetchUrl = "http://localhost:4000/clients"
+export const fetchUrl = "http://localhost:4000"

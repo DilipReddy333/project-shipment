@@ -40,7 +40,7 @@ const ClientRegistrationBody = ({ setCurrentMenu }) => {
       }
       // MAKING THE API REQUEST TO THE BACKEND TO SAVE THE CLIENT DATA
       Swal.showLoading();
-      const resp = await fetch(`${fetchUrl}/save`, {
+      const resp = await fetch(`${fetchUrl}/clients/save`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

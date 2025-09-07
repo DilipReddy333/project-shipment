@@ -14,7 +14,7 @@ const LabelWithDropdown = () => {
     console.log("fetching group names");
     try {
       setLoading(true);
-      const resp = await fetch(`${fetchUrl}/`, {
+      const resp = await fetch(`${fetchUrl}/clients`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
