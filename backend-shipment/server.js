@@ -4,6 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 const clientRouter = require('./routes/ClientRouter');
 const connectDB = require('./database/connectDB');
+const mawbRouter = require('./routes/mawbRouter');
 
 
 const PORT = process.env.PORT || 4000;
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/clients",clientRouter);
+app.use("/mawb", mawbRouter);
 
 
 
