@@ -11,14 +11,19 @@ import {
 import ErrorMessage from "../errorMessage/errorMessage";
 import Legend from "../legend/Legend";
 import LoadingSpinner from "../loading-spinner/LoadingSpinner";
+import { useDelete } from "../../../hooks/useDelete";
+import { fetchUrl } from "../../urls/URLs";
 
 const MawbDatatable = ({
   details,
   loading,
   error,
   setMawbAction,
+  setAllMawbData,
   setMawbDetailToEdit,
 }) => {
+  console.count("MawbDataTable");
+  const { deleteDetail } = useDelete();
   const addMawbDetailHandler = () => {
     setMawbAction("add");
     setMawbDetailToEdit(null);
@@ -26,6 +31,14 @@ const MawbDatatable = ({
   const mawbEditHandler = (mawbDetail) => {
     setMawbAction("edit");
     setMawbDetailToEdit(mawbDetail);
+  };
+  const deleteMawbDetailsHandler = async (id) => {
+    const result = await deleteDetail(`${fetchUrl}/mawb/${id}`);
+    if (result) {
+      setAllMawbData((prev) => {
+        return prev.filter((detail) => detail._id !== id);
+      });
+    }
   };
   return (
     <>
@@ -72,9 +85,7 @@ const MawbDatatable = ({
                         <Button
                           inverted
                           color="red"
-                          onClick={() => {
-                            console.log("Delete detail clicked");
-                          }}
+                          onClick={() => deleteMawbDetailsHandler(detail._id)}
                           content="Delete"
                         />
                       </TableCell>
@@ -86,7 +97,7 @@ const MawbDatatable = ({
           </div>
         ) : (
           <>
-            {!error?.message ? (
+            {!error?.message && !loading ? (
               <h4>No Fullshipment Details</h4>
             ) : (
               <ErrorMessage errorMessage={error?.message} />

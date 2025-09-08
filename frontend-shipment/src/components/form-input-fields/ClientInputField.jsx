@@ -4,8 +4,7 @@ import debounce from "lodash.debounce";
 import { fetchUrl } from "../../urls/URLs";
 import FirstLetterColor from "../first-letter-color/FirstLetterColor";
 import DisplayLabel from "../display-label/DisplayLabel";
-const ClientInputField = forwardRef(({ value }, ref) => {
-  console.count("ClientInputField");
+const ClientInputField = forwardRef(({ value, error }, ref) => {
   // const [formData, setFormData] = useState({
   //   clientName: "",
   //   mawbNo: "",
@@ -137,6 +136,7 @@ const ClientInputField = forwardRef(({ value }, ref) => {
             setDropdownValue(value);
           }}
         />
+        {error && <p className="field_error">{error}</p>}
       </div>
 
       {/* <Form.Field>

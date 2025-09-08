@@ -6,6 +6,7 @@ const LabelWithInputField = ({
   redLetter,
   labelName,
   inputPlaceHolder,
+  error,
   ...props
 }) => {
   // console.count("label with input field");
@@ -17,6 +18,14 @@ const LabelWithInputField = ({
           <DisplayLabel label={labelName} />
         </label>
         <Input placeholder={inputPlaceHolder} {...props} />
+        {error && (
+          <p
+            className="field_error"
+            style={{ bottom: `${error?.length > 24 ? "-40px" : "-20px"}` }}
+          >
+            {error}
+          </p>
+        )}
       </div>
     </>
   );

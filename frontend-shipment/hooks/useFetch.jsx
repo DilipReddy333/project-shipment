@@ -6,14 +6,15 @@ export const useFetch = () => {
   const [error, setError] = useState(null);
 
   const makeHttpRequest = async (url, config) => {
+    let respData;
     try {
       setLoading(true);
       const resp = await fetch(url, config);
-      const data = await resp.json();
+      respData = await resp.json();
       if (resp.ok) {
         await new Promise((resolve) => setTimeout(resolve, 500));
         setError(null);
-        setData(data);
+        setData(respData);
       } else {
         setError(data);
         setData([]);
@@ -23,6 +24,7 @@ export const useFetch = () => {
       setError(error);
     } finally {
       setLoading(false);
+      return respData;
     }
   };
   return {

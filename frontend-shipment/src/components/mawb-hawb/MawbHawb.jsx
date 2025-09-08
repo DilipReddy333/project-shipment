@@ -9,6 +9,7 @@ import { fetchUrl } from "../../urls/URLs";
 import LoadingSpinner from "../loading-spinner/LoadingSpinner";
 import ErrorMessage from "../errorMessage/errorMessage";
 import MawbDatatable from "./MawbDatatable";
+import { useFormValidation } from "../../../hooks/useFormValidations";
 
 const MawbHawb = () => {
   console.count("MawbHawb");
@@ -17,6 +18,7 @@ const MawbHawb = () => {
   const destinationRef = useRef(null);
 
   const [mawbAction, setMawbAction] = useState("");
+  const [exportData, setExportData] = useState(false);
 
   const [mawbDetailToEdit, setMawbDetailToEdit] = useState(null);
 
@@ -26,7 +28,7 @@ const MawbHawb = () => {
   // console.log("hawbOriginRefs:", hawbOriginRefs);
   // console.log("hawbDestinationRefs:", hawbDestinationRefs);
 
-  // useFetch() to save the Mawb and Hawb details into the database.
+  // useFetch() to save/update the Mawb and Hawb details into the database.
   const {
     loading: mawbLoading,
     data: mawbData,
@@ -40,6 +42,7 @@ const MawbHawb = () => {
     data: AllMawbData,
     error: mawbFetchError,
     makeHttpRequest: mawbFetchHandler,
+    setData: setAllMawbData,
   } = useFetch();
   useEffect(() => {
     const getAllMawbAndHawbDetails = async () => {
@@ -58,7 +61,7 @@ const MawbHawb = () => {
     return [...Array(N).keys()].map((i) => i + 1);
   }, []);
   const hawbContainers = createArray(noOfHawbContainers);
-  console.log("hawbContainers: ", hawbContainers);
+  // console.log("hawbContainers: ", hawbContainers);
 
   useEffect(() => {
     setNoOfHawbContainers(
@@ -71,15 +74,33 @@ const MawbHawb = () => {
     setNoOfHawbContainers((prev) => prev + 1);
   };
 
+  const { mawbErrors, validateMawbFields } = useFormValidation();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
     // const formData = Object.fromEntries(fd.entries());
-    // formData.clientName = clientNameRef?.current.state?.value;
-    // formData.mawbOrigin = originRef.current?.state?.value;
-    // formData.mawbDestination = destinationRef.current?.state?.value;
-    // formData.hawbOrigin = hawbOriginRef.current?.state?.value;
-    // formData.hawbDestinationRef = hawbDestinationRef.current?.state?.value;
+    const clientName = clientNameRef?.current.state?.value;
+    const mawbNo = fd.get("mawbNo");
+    const mawbOrigin = originRef.current?.state?.value;
+    const mawbDestination = destinationRef.current?.state?.value;
+    const totalNoOfPieces = fd.get("pieces");
+    const grossWeight = fd.get("grossWeight");
+    const isMawbValid = validateMawbFields({
+      clientName,
+      mawbNo,
+      mawbOrigin,
+      mawbDestination,
+      totalNoOfPieces,
+      grossWeight,
+    });
+    console.log("isMawbValid:", isMawbValid);
+    if (!isMawbValid) {
+      console.log("returning...");
+      return;
+    }
+    // const hawbOrigin = hawbOriginRef.current?.state?.value;
+    // const hawbDestinationRef = hawbDestinationRef.current?.state?.value;
     const mawbDetails = {
       clientName: clientNameRef?.current.state?.value,
       mawbNo: fd.get("mawbNo"),
@@ -89,31 +110,75 @@ const MawbHawb = () => {
       grossWeight: fd.get("grossWeight"),
     };
     const allHawbDetails = hawbContainers.map((container) => {
-      return {
-        hawbNo: fd.get(`hawbNo${container}`),
-        origin: hawbOriginRefs.current[container]?.current?.state?.value || "",
-        destination:
-          hawbDestinationRefs.current[container]?.current?.state?.value || "",
-        totalNoOfPieces: fd.get(`hawbPieces${container}`),
-        grossWeight: fd.get(`hawbGrossWeight${container}`),
-        commodity: fd.get(`hawbCommodity${container}`),
-      };
+      if (!mawbDetailToEdit?._id) {
+        // hawb details to save to the database
+        return {
+          hawbNo: fd.get(`hawbNo${container}`),
+          origin:
+            hawbOriginRefs.current[container]?.current?.state?.value || "",
+          destination:
+            hawbDestinationRefs.current[container]?.current?.state?.value || "",
+          totalNoOfPieces: fd.get(`hawbPieces${container}`),
+          grossWeight: fd.get(`hawbGrossWeight${container}`),
+          commodity: fd.get(`hawbCommodity${container}`),
+        };
+      } else {
+        // hawb details to update in the database
+        return {
+          ...mawbDetailToEdit.hawbIds[container - 1],
+          hawbNo: fd.get(`hawbNo${container}`),
+          origin:
+            hawbOriginRefs.current[container]?.current?.state?.value || "",
+          destination:
+            hawbDestinationRefs.current[container]?.current?.state?.value || "",
+          totalNoOfPieces: fd.get(`hawbPieces${container}`),
+          grossWeight: fd.get(`hawbGrossWeight${container}`),
+          commodity: fd.get(`hawbCommodity${container}`),
+        };
+      }
     });
     // console.log("mawbDetails:", mawbDetails);
     // console.log("allHawbDetails:", allHawbDetails);
     // Make API request to the backend to store both Mawb and Hawb details to the database
-    await mawbSaveHandler(`${fetchUrl}/mawb`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ mawbDetails, allHawbDetails }),
-    });
+    if (!mawbDetailToEdit?._id) {
+      const resp = await mawbSaveHandler(`${fetchUrl}/mawb`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mawbDetails, allHawbDetails }),
+      });
+      setAllMawbData((prev) => {
+        return [resp, ...prev];
+      });
+    } else {
+      const resp = await mawbSaveHandler(
+        `${fetchUrl}/mawb/${mawbDetailToEdit._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ mawbDetails, allHawbDetails }),
+        }
+      );
+      setAllMawbData((prev) => {
+        return prev.map((detail) => {
+          if (detail._id === resp._id) {
+            return resp;
+          } else {
+            return detail;
+          }
+        });
+      });
+    }
+    setExportData(true);
   };
   const handleShowDatatable = (e) => {
     e.preventDefault();
     setMawbAction("");
     setMawbDetailToEdit(null);
+    setExportData(false);
     // const form = e.target.closest("form");
     // if (form) form.reset();
     // if (clientNameRef.current) clientNameRef.current.clearValue();
@@ -126,19 +191,6 @@ const MawbHawb = () => {
     // if (hawbOriginRef.current) hawbOriginRef.current.clearValue();
     // if (hawbDestinationRef.current) hawbDestinationRef.current.clearValue();
   };
-  // if (loading) {
-  //   return <LoadingSpinner loadingMessage={"Saving..."} />;
-  // }
-  // if (error?.message) {
-  //   return <ErrorMessage errorMessage={error?.message} />;
-  // }
-  // if (mawbData) {
-  //   console.log("mawbData:", mawbData);
-  // }
-  // if (AllMawbData) {
-  //   console.log("AllMawbData:", AllMawbData);
-  // }
-  console.log("mawbDetailToEdit:", mawbDetailToEdit);
   return (
     <>
       {mawbLoading && <LoadingSpinner loadingMessage={"Saving..."} />}
@@ -151,6 +203,7 @@ const MawbHawb = () => {
           details={AllMawbData}
           loading={mawbFetchLoader}
           error={mawbFetchError}
+          setAllMawbData={setAllMawbData}
           setMawbAction={setMawbAction}
           setMawbDetailToEdit={setMawbDetailToEdit}
         />
@@ -161,6 +214,7 @@ const MawbHawb = () => {
           <MAWBDetails
             classname={"mawbdetails_flex_style"}
             mawbDetailToEdit={mawbDetailToEdit}
+            errors={mawbErrors}
             clientNameRef={clientNameRef}
             originRef={originRef}
             destinationRef={destinationRef}
@@ -189,15 +243,39 @@ const MawbHawb = () => {
           </>
 
           <div style={{ textAlign: "right" }}>
-            <CustomButton
-              btnClassname={"save_btn"}
-              btnContent={"Save"}
-              btnIcon={"save"}
-              iconPosition={"left"}
-              onClick={() => {
-                console.log("Save button clicked");
-              }}
-            />
+            <>
+              {exportData ? (
+                <CustomButton
+                  btnClassname={"save_btn"}
+                  btnContent={"Export"}
+                  btnIcon={"download"}
+                  iconPosition={"left"}
+                  type="button"
+                />
+              ) : (
+                <>
+                  {!mawbDetailToEdit?._id ? (
+                    <CustomButton
+                      btnClassname={"save_btn"}
+                      btnContent={"Save"}
+                      btnIcon={"save"}
+                      iconPosition={"left"}
+                      type="submit"
+                      disabled={mawbLoading}
+                    />
+                  ) : (
+                    <CustomButton
+                      btnClassname={"save_btn update_btn"}
+                      btnContent={"Update"}
+                      btnIcon={"pencil alternate"}
+                      iconPosition={"left"}
+                      type="submit"
+                      disabled={mawbLoading}
+                    />
+                  )}
+                </>
+              )}
+            </>
             <CustomButton
               btnClassname="cancel_btn"
               btnContent="Cancel"

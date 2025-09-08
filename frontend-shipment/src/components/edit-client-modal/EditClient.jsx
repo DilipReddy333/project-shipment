@@ -62,16 +62,18 @@ const EditClient = ({ clientId, setAllClients }) => {
       });
       const data = await resp.json();
       // console.log(data);
-      setAllClients((prev) => {
-        return prev.map((client) => {
-          if (client._id === data._id) {
-            return data;
-          } else {
-            return client;
-          }
-        });
-      });
+
       if (data) {
+        setAllClients((prev) => {
+          const updatedClients = prev.clients?.map((client) => {
+            if (client._id === data._id) {
+              return data;
+            } else {
+              return client;
+            }
+          });
+          return { clients: updatedClients };
+        });
         setOpen(false);
       }
     } catch (error) {

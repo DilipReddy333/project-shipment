@@ -7,10 +7,17 @@ import { forwardRef } from "react";
 
 const MAWBDetails = forwardRef(
   (
-    { mawbDetailToEdit, classname, clientNameRef, originRef, destinationRef },
+    {
+      mawbDetailToEdit,
+      errors,
+      classname,
+      clientNameRef,
+      originRef,
+      destinationRef,
+    },
     ref
   ) => {
-    console.log(mawbDetailToEdit);
+    console.log("Mawb errors:", errors);
     return (
       <>
         <Legend legendName={"MAWB Details"}>
@@ -23,6 +30,7 @@ const MAWBDetails = forwardRef(
                     ? mawbDetailToEdit.clientName
                     : ""
                 }
+                error={errors?.clientNameError || ""}
                 ref={clientNameRef}
               />
 
@@ -30,6 +38,7 @@ const MAWBDetails = forwardRef(
               <LabelWithInputField
                 redLetter={"M"}
                 labelName={"AWB No."}
+                error={errors?.mawbNoError}
                 inputPlaceHolder={"Enter 11 digit MAWB No."}
                 name="mawbNo"
                 maxLength={11}
@@ -42,6 +51,7 @@ const MAWBDetails = forwardRef(
               <CityNamesDropdown
                 letter={"O"}
                 label={"rigin"}
+                error={errors?.originError || ""}
                 name="origin"
                 editValue={
                   mawbDetailToEdit?.origin ? mawbDetailToEdit.origin : ""
@@ -54,6 +64,7 @@ const MAWBDetails = forwardRef(
               <CityNamesDropdown
                 letter={"D"}
                 label={"estination"}
+                error={errors?.destinationError || ""}
                 name="destination"
                 editValue={
                   mawbDetailToEdit?.destination
@@ -68,6 +79,7 @@ const MAWBDetails = forwardRef(
               {/* Total No. of Pieces */}
               <LabelWithInputField
                 redLetter={"T"}
+                error={errors?.totalNoOfPiecesError || ""}
                 labelName={"otal No. of Pieces"}
                 inputPlaceHolder={"Total No. of Pieces"}
                 name="pieces"
@@ -87,6 +99,7 @@ const MAWBDetails = forwardRef(
                     ? mawbDetailToEdit.grossWeight
                     : ""
                 }
+                error={errors?.grossWeightError || ""}
                 labelName={"ross Weight"}
                 inputPlaceHolder={"Gross Weight"}
                 name="grossWeight"

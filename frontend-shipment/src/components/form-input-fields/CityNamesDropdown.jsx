@@ -5,7 +5,7 @@ import DisplayLabel from "../display-label/DisplayLabel";
 import { forwardRef, useState } from "react";
 
 const CityNamesDropdown = forwardRef(
-  ({ letter, editValue, label, name, placeholder, ...props }, ref) => {
+  ({ letter, editValue, label, error, name, placeholder, ...props }, ref) => {
     const [currentValue, setCurrentValue] = useState(
       editValue ? editValue : ""
     );
@@ -37,6 +37,14 @@ const CityNamesDropdown = forwardRef(
             onChange={handleChange}
             {...props}
           />
+          {error && (
+            <p
+              className="field_error"
+              style={{ bottom: `${error?.length > 24 ? "-40px" : "-20px"}` }}
+            >
+              {error}
+            </p>
+          )}
         </div>
       </>
     );
