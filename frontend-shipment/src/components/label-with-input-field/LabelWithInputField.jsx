@@ -21,7 +21,7 @@ const LabelWithInputField = ({
         {error && (
           <p
             className="field_error"
-            style={{ bottom: `${error?.length > 24 ? "-40px" : "-20px"}` }}
+            // style={{ bottom: `${error?.length > 24 ? "-40px" : "-20px"}` }}
           >
             {error}
           </p>

@@ -10,6 +10,7 @@ import LoadingSpinner from "../loading-spinner/LoadingSpinner";
 import ErrorMessage from "../errorMessage/errorMessage";
 import MawbDatatable from "./MawbDatatable";
 import { useFormValidation } from "../../../hooks/useFormValidations";
+import { useHawbFieldsValidation } from "../../../hooks/useHawbFieldsValidation";
 
 const MawbHawb = () => {
   console.count("MawbHawb");
@@ -75,6 +76,7 @@ const MawbHawb = () => {
   };
 
   const { mawbErrors, validateMawbFields } = useFormValidation();
+  const { errors, validateHawbFields } = useHawbFieldsValidation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -94,9 +96,23 @@ const MawbHawb = () => {
       totalNoOfPieces,
       grossWeight,
     });
+    let isHawbFieldsValid;
     console.log("isMawbValid:", isMawbValid);
-    if (!isMawbValid) {
-      console.log("returning...");
+    console.log("isHawbFieldsValid: ", isHawbFieldsValid);
+    hawbContainers.forEach((container) => {
+      const formValues = {
+        hawbNo: fd.get(`hawbNo${container}`),
+        origin: hawbOriginRefs.current[container]?.current?.state?.value || "",
+        destination:
+          hawbDestinationRefs.current[container]?.current?.state?.value || "",
+        totalNoOfPieces: fd.get(`hawbPieces${container}`),
+        grossWeight: fd.get(`hawbGrossWeight${container}`),
+        commodity: fd.get(`hawbCommodity${container}`),
+      };
+      isHawbFieldsValid = validateHawbFields(formValues, container);
+    });
+    if (!isMawbValid || !isHawbFieldsValid) {
+      console.log("Invalid field(s) found...");
       return;
     }
     // const hawbOrigin = hawbOriginRef.current?.state?.value;
@@ -172,13 +188,13 @@ const MawbHawb = () => {
         });
       });
     }
-    setExportData(true);
+    // setExportData(true);
   };
   const handleShowDatatable = (e) => {
     e.preventDefault();
     setMawbAction("");
     setMawbDetailToEdit(null);
-    setExportData(false);
+    // setExportData(false);
     // const form = e.target.closest("form");
     // if (form) form.reset();
     // if (clientNameRef.current) clientNameRef.current.clearValue();
@@ -232,6 +248,7 @@ const MawbHawb = () => {
                 <HAWBDetails
                   key={container}
                   container={container}
+                  errors={errors}
                   mawbDetailToEdit={mawbDetailToEdit}
                   classname={"hawbdetails_flex_style"}
                   addHawbContainer={addHawbContainer}
@@ -244,7 +261,7 @@ const MawbHawb = () => {
 
           <div style={{ textAlign: "right" }}>
             <>
-              {exportData ? (
+              {/* {exportData ? (
                 <CustomButton
                   btnClassname={"save_btn"}
                   btnContent={"Export"}
@@ -252,29 +269,29 @@ const MawbHawb = () => {
                   iconPosition={"left"}
                   type="button"
                 />
-              ) : (
-                <>
-                  {!mawbDetailToEdit?._id ? (
-                    <CustomButton
-                      btnClassname={"save_btn"}
-                      btnContent={"Save"}
-                      btnIcon={"save"}
-                      iconPosition={"left"}
-                      type="submit"
-                      disabled={mawbLoading}
-                    />
-                  ) : (
-                    <CustomButton
-                      btnClassname={"save_btn update_btn"}
-                      btnContent={"Update"}
-                      btnIcon={"pencil alternate"}
-                      iconPosition={"left"}
-                      type="submit"
-                      disabled={mawbLoading}
-                    />
-                  )}
-                </>
-              )}
+              ) : ( */}
+              <>
+                {!mawbDetailToEdit?._id ? (
+                  <CustomButton
+                    btnClassname={"save_btn"}
+                    btnContent={"Save"}
+                    btnIcon={"save"}
+                    iconPosition={"left"}
+                    type="submit"
+                    disabled={mawbLoading}
+                  />
+                ) : (
+                  <CustomButton
+                    btnClassname={"save_btn update_btn"}
+                    btnContent={"Update"}
+                    btnIcon={"pencil alternate"}
+                    iconPosition={"left"}
+                    type="submit"
+                    disabled={mawbLoading}
+                  />
+                )}
+              </>
+              {/* )} */}
             </>
             <CustomButton
               btnClassname="cancel_btn"

@@ -10,6 +10,7 @@ const HAWBDetails = forwardRef(
     {
       container,
       mawbDetailToEdit,
+      errors,
       classname,
       addHawbContainer,
       hawbOriginRef,
@@ -19,6 +20,7 @@ const HAWBDetails = forwardRef(
   ) => {
     // console.log("hawbOriginRef:", hawbOriginRef.current.state);
     // console.log("hawbDestinationRef:", hawbDestinationRef.current.state);
+    console.log("HawbErrors:", errors);
     return (
       <>
         <Legend legendName={"HAWB Details"}>
@@ -28,6 +30,7 @@ const HAWBDetails = forwardRef(
               <LabelWithInputField
                 redLetter={"H"}
                 labelName={"AWB No."}
+                error={errors ? errors[`hawbNo${container}`] : ""}
                 inputPlaceHolder={"Enter 25 digit HAWB No."}
                 name={`hawbNo${container}`}
                 maxLength={125}
@@ -40,6 +43,7 @@ const HAWBDetails = forwardRef(
               <CityNamesDropdown
                 letter={"O"}
                 label={"rigin"}
+                error={errors ? errors[`origin${container}`] : ""}
                 name="origin"
                 editValue={
                   mawbDetailToEdit?.hawbIds[container - 1]?.origin || ""
@@ -52,6 +56,7 @@ const HAWBDetails = forwardRef(
               <CityNamesDropdown
                 letter={"D"}
                 label={"estination"}
+                error={errors ? errors[`destination${container}`] : ""}
                 editValue={
                   mawbDetailToEdit?.hawbIds[container - 1]?.destination || ""
                 }
@@ -76,6 +81,7 @@ const HAWBDetails = forwardRef(
               <LabelWithInputField
                 redLetter={"T"}
                 labelName={"otal No. of Pieces"}
+                error={errors ? errors[`totalNoOfPieces${container}`] : ""}
                 inputPlaceHolder={"Total No. of Pieces"}
                 name={`hawbPieces${container}`}
                 type={"number"}
@@ -88,6 +94,7 @@ const HAWBDetails = forwardRef(
               <LabelWithInputField
                 redLetter={"G"}
                 labelName={"ross Weight"}
+                error={errors ? errors[`grossWeight${container}`] : ""}
                 inputPlaceHolder={"Gross Weight"}
                 name={`hawbGrossWeight${container}`}
                 type={"number"}
@@ -99,6 +106,7 @@ const HAWBDetails = forwardRef(
               <LabelWithInputField
                 redLetter={"C"}
                 labelName={"ommodity"}
+                error={errors ? errors[`commodity${container}`] : ""}
                 inputPlaceHolder={"Commodity"}
                 name={`hawbCommodity${container}`}
                 defaultValue={

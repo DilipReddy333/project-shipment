@@ -1,8 +1,5 @@
 import { useState } from "react";
-
-const isInvalidField = (value) => {
-  return !value || value.trim().length === 0;
-};
+import { isInvalidField } from "../utils/isInvalidField";
 
 export const useFormValidation = () => {
   const [mawbErrors, setMawbErrors] = useState({});
@@ -10,6 +7,8 @@ export const useFormValidation = () => {
   const validateMawbFields = (formValues) => {
     if (isInvalidField(formValues.clientName)) {
       newErrors["clientNameError"] = "Please fill this field";
+    } else {
+      newErrors["clientNameError"] = "";
     }
     if (isInvalidField(formValues.mawbNo)) {
       newErrors["mawbNoError"] = "Please fill this field";
@@ -59,20 +58,29 @@ export const useFormValidation = () => {
     if (isInvalidField(formValues.totalNoOfPieces)) {
       newErrors["totalNoOfPiecesError"] = "Please fill this field";
     }
+    if (parseInt(formValues.totalNoOfPieces) < 0) {
+      newErrors["totalNoOfPiecesError"] = "Value should be greater than 0";
+    }
+    if (
+      !isInvalidField(formValues.totalNoOfPieces) &&
+      !parseInt(formValues.totalNoOfPieces) < 0
+    ) {
+      newErrors["totalNoOfPiecesError"] = "";
+    }
     if (isInvalidField(formValues.grossWeight)) {
       newErrors["grossWeightError"] = "Please fill this field";
     }
-    // if (formValues.mawbNo?.length !== 11) {
-    //   return "MAWB No. field should only have 11 digits.";
-    // }
-    // if (formValues.origin?.length !== 3) {
-    //   return "Origin field should only have 3 characters.";
-    // }
-    // if (formValues.destination?.length !== 3) {
-    //   return "Origin field should only have 3 characters.";
-    // }
+    if (parseInt(formValues.grossWeight) < 0) {
+      newErrors["grossWeightError"] = "Value should be greater than 0";
+    }
+    if (
+      !isInvalidField(formValues.grossWeight) &&
+      !parseInt(formValues.grossWeight) < 0
+    ) {
+      newErrors["grossWeightError"] = "";
+    }
     setMawbErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return Object.values(newErrors).filter((v) => v !== "").length === 0;
   };
   return {
     mawbErrors,
